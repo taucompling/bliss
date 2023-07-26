@@ -1,6 +1,6 @@
 # BLISS – a Benchmark for Language Induction from Small Sets
 
-BLISS is a benchmark for generalization capabilities of artificial models for language induction. The benchmark score represent how well a model generalizes in inverse relation how little data it was trained on.
+BLISS is a dataset for testing the generalization capabilities of artificial models for language induction. The benchmark score represent how well a model generalizes in inverse relation how little data it was trained on.
 
 This repository contains the datasets and data generation scripts for training and testing a model on BLISS.
 
@@ -8,21 +8,23 @@ For the full method and specs see the paper Benchmarking Neural Network Generali
 
 ## Languages
 
-- aⁿbⁿ
-- aⁿbⁿcⁿ
-- aⁿbⁿcⁿdⁿ
-- aⁿbᵐcⁿ⁺ᵐ
-- Dyck-1
-- Dyck-2
+* aⁿbⁿ ✅
+* aⁿbⁿcⁿ ✅
+* aⁿbⁿcⁿdⁿ ✅
+* aⁿbᵐcⁿ⁺ᵐ ✅
+* Dyck-1 🚧
+* Dyck-2 🚧
 
 ## String structure
 
 Following [Gers & Schmidhuber (2001)](https://doi.org/10.1109/72.963769), all sequences start and end with the symbol `#`. This makes it possible to test for strict acceptance/rejection.
 
+All files contain strings surrounded with `#` from both sides. Inputs and targets need to be trimmed accordingly.
+
 Example:
 
 <table>
-<tr><td colspan="2"><b>aⁿbⁿ string</b></td> </tr>
+<tr><td colspan="2"><b>aⁿbⁿ</b></td> </tr>
 <tr><td>Input string</td><td><code>#aaabbb</code></codr></td></tr>
 <tr><td>Target string</td><td><code>aaabbb#</code></td></tr>
 </table>
@@ -32,6 +34,7 @@ Example:
 All datasets are provided with boolean mask tensors for testing model outputs: 
 
 - **Deterministic step masks** - some languages have deterministic phases where a model's accuracy can be tested. For example, `aⁿbⁿ` sequences become determinstic after seeing the first `b`. A model that correctly recognizes `aⁿbⁿ` will not predict any probability to `a` from the first `b` onwards.    
+
 
 - **Valid symbol masks** - languages like Dyck don't have any deterministic parts (a new parenthesis can always be opened). But the set of valid symbols at each time step is limited. For example, for a Dyck-1 sequence, after seeing `#((`, a good model must not assign any probability to the end-of-sequence symbol. 
 
@@ -70,13 +73,17 @@ All datasets are provided with boolean mask tensors for testing model outputs:
 Each folder in `datasets` has the following structure:
 
 - `<language_name>`
-    - `train_<batch_size>_p_<prior>_seed_<seed>.txt.zip` -- train set of batch `size` generated using `prior` and `seed`,
-      including start and end-of-sequence.
+    - `train_<batch_size>_p_<prior>_seed_<seed>.txt.zip` – train set of batch `size` generated using `prior` and `seed`.
+  - `test.txt.zip` -- first 15,000 strings of the language sorted by length.
   - `preview.txt` -- first 10 strings of the language.
-  - `test.txt.zip` -- first 15,000 strings of the language, including start and end-of-sequence.
-  - `test_deterministic_mask.txt.zip` -- boolean mask for deterministic time steps, for relevant languages (all but Dyck
+  - `test_deterministic_mask.txt.zip` – boolean mask for deterministic time steps, for relevant languages (all but Dyck
     languages). Shape: `(batch_size, sequence_length)`.
-  - `test_valid_symbols_mask.txt.zip` -- boolean mask for relevant symbols, for Dyck languages. Shape: `(batch_size, sequence_length, vocabulary_size)` 
+  - `test_valid_symbols_mask.txt.zip` – boolean mask for relevant symbols, for Dyck languages. Shape: `(batch_size, sequence_length, vocabulary_size)` 
+
+
+
+### ️🚨 The password to all zip files is `1234`. [Why?](#password) 
+
 
 
 ## Generating new data
@@ -93,13 +100,18 @@ Example:
 python generate_dataset.py --lang an_bn --seed 100 --prior 0.3
 ```
 
-## Test contamination protection
-
-The password to all zip files is `1234`.
+## <a id="password" name="password"></a> Test contamination protection
 
 To prevent test set contamination by large language models which train and test on crawled data, all dataset files
-except the previews are zipped and password-protected.
+except previews are zipped and password-protected.
+
+The password to all zip files is `1234`.
 
 See [Jacovi et al., 2022 – Practical Strategies for Mitigating Data Contamination by Evaluation Benchmarks](https://arxiv.org/abs/2305.10160).
 
 Each dataset folder contains `preview.txt` for easy inspection of the data.
+
+## Requirements 
+
+* Python ≥ 3.5
+* Numpy

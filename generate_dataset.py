@@ -7,7 +7,6 @@ import subprocess
 from typing import Optional
 
 import numpy as np
-from tqdm import tqdm
 
 _DEFAULT_SEED = 100
 _DEFAULT_PRIOR = 0.3
@@ -63,7 +62,7 @@ def _write_strings(
     path = _get_language_path(language_name) / filename
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w") as f:
-        for i, s in tqdm(enumerate(strings), total=len(strings)):
+        for i, s in enumerate(strings):
             f.write(f"{s}")
             if i < len(strings) - 1:
                 f.write("\n")
@@ -202,7 +201,7 @@ def gen_an_bn(prior, seed):
 def _gen_an_bn_cn_etc_strings(n_values, language_name):
     strings = []
 
-    for n in tqdm(n_values):
+    for n in n_values:
         chars = (
             ["#"]
             + (["a"] * n)
