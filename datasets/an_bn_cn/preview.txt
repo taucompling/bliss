@@ -1,0 +1,10 @@
+#abc#
+#aabbcc#
+#aaabbbccc#
+#aaaabbbbcccc#
+#aaaaabbbbbccccc#
+#aaaaaabbbbbbcccccc#
+#aaaaaaabbbbbbbccccccc#
+#aaaaaaaabbbbbbbbcccccccc#
+#aaaaaaaaabbbbbbbbbccccccccc#
+#aaaaaaaaaabbbbbbbbbbcccccccccc#
