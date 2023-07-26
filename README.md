@@ -42,9 +42,7 @@ All datasets are provided with boolean mask tensors for testing model outputs:
 <tr><td colspan="2"><b>aⁿbⁿ</b></td></tr>
 <tr><td>String example</td><td><code>aaabbb</code></td></tr>
 <tr><td>Input sequence</td><td>
-<code>
-[#,a,a,a,b,b,b]
-</code></td></tr>
+<code>[#,a,a,a,b,b,b]</code></td></tr>
 <tr><td>Target sequence</td><td><code>[a,a,a,b,b,b,#]</code></td></tr>
 <tr><td>Vocabulary</td><td><code>{"#": 0, "a": 1, "b": 2}</code></td></tr>
 <tr><td>Deterministic steps mask (boolean)</td><td><code>[0,0,0,0,1,1,1]</code></td></tr>
