@@ -70,13 +70,13 @@ All datasets are provided with boolean mask tensors for testing model outputs:
 Each folder in `datasets` has the following structure:
 
 - `<language_name>`
-    - `train_<size>__p_<prior>__seed_<seed>.txt.zip` -- train set of batch `size` generated using `prior` and `seed`,
+    - `train_<batch_size>_p_<prior>_seed_<seed>.txt.zip` -- train set of batch `size` generated using `prior` and `seed`,
       including start and end-of-sequence.
-  - `preview.txt` -- first 10 strings the language.
-    - `test.txt.zip` -- first 10,000 strings for the language, including start and end-of-sequence for testing.
-    - `test_deterministic_mask.txt.zip` -- boolean mask for deterministic time steps, for relevant languages (all but Dyck
-      languages). Shape: `(batch_size, sequence_length)`.
-    - `test_valid_symbols_mask.txt.zip` -- mask for relevant symbols, for Dyck languages. Shape: `(batch_size, sequence_length, vocabulary_size)` 
+  - `preview.txt` -- first 10 strings of the language.
+  - `test.txt.zip` -- first 15,000 strings of the language, including start and end-of-sequence.
+  - `test_deterministic_mask.txt.zip` -- boolean mask for deterministic time steps, for relevant languages (all but Dyck
+    languages). Shape: `(batch_size, sequence_length)`.
+  - `test_valid_symbols_mask.txt.zip` -- boolean mask for relevant symbols, for Dyck languages. Shape: `(batch_size, sequence_length, vocabulary_size)` 
 
 
 ## Generating new data
