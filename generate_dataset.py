@@ -1,10 +1,12 @@
 import argparse
+import itertools
+import math
 import pathlib
+import random
 import subprocess
 from typing import Optional
 
 import numpy as np
-import utils
 from tqdm import tqdm
 
 _DEFAULT_SEED = 100
@@ -16,7 +18,7 @@ _BATCH_SIZES = (
     1000,
 )
 _PREVIEW_SIZE = 10
-_NUM_TEST_STRINGS = 10_000
+_NUM_TEST_STRINGS = 15_000
 _ZIP_PASSWORD = "1234"
 
 
@@ -125,7 +127,7 @@ def make_corpus_from_pcfg(
     return tuple(sorted(sequences, key=len))
 
 
-def _make_an_bn(batch_size, prior):
+def _gen_an_bn_training_strings(batch_size, prior):
     an_bn_pcfg = {
         "S": ((("#", "a", "X", "b", "#"), 1),),
         "X": (
@@ -138,12 +140,12 @@ def _make_an_bn(batch_size, prior):
     )
 
 
-def _make_an_bn_etc_deterministic_steps_mask(training_strings) -> np.ndarray:
-    batch_size = len(training_strings)
-    max_string_len = max(len(x) for x in training_strings)
+def _make_an_bn_etc_deterministic_steps_mask(strings) -> np.ndarray:
+    batch_size = len(strings)
+    max_string_len = max(len(x) for x in strings) - 1
 
-    deterministic_steps_mask = np.zeros((batch_size, max_string_len - 1), dtype=bool)
-    for i, string in enumerate(training_strings):
+    deterministic_steps_mask = np.zeros((batch_size, max_string_len), dtype=bool)
+    for i, string in enumerate(strings):
         first_b_idx = string.index("b")
         string_len = len(string) - 1  # Last char is "#".
         deterministic_steps_mask[i, first_b_idx:string_len] = True
@@ -153,7 +155,7 @@ def _make_an_bn_etc_deterministic_steps_mask(training_strings) -> np.ndarray:
 
 def gen_an_bn(prior, seed):
     for batch_size in _BATCH_SIZES:
-        training_strings = tuple(_make_an_bn(batch_size, prior))
+        training_strings = tuple(_gen_an_bn_training_strings(batch_size, prior))
         _write_strings(
             training_strings,
             language_name="an_bn",
@@ -214,6 +216,89 @@ def _gen_an_bn_cn_etc_strings(n_values, language_name):
     return tuple(sorted(strings, key=len))
 
 
+def _gen_an_bm_c_n_plus_m_training_strings(batch_size, prior):
+    pcfg = {
+        "S": ((("#", "a", "X", "c", "#"), 1),),
+        "X": (
+            (("a", "X", "c"), 1 - prior),
+            (("Y",), prior),
+        ),
+        "Y": ((("b", "Z", "c"), 1),),
+        "Z": (
+            (("b", "Z", "c"), 1 - prior),
+            (("",), prior),
+        ),
+    }
+    return make_corpus_from_pcfg(batch_size=batch_size, pcfg=pcfg, max_length=None)
+
+
+def _make_an_bm_c_n_plus_m_deterministic_steps_mask(strings) -> np.ndarray:
+    batch_size = len(strings)
+    max_string_len = max(len(x) for x in strings)
+
+    deterministic_steps_mask = np.zeros((batch_size, max_string_len), dtype=bool)
+
+    for i, string in enumerate(strings):
+        first_c_idx = string.index("c")
+        string_len = len(string) - 1  # Last char is "#".
+        deterministic_steps_mask[i, first_c_idx:string_len] = True
+
+    return deterministic_steps_mask
+
+
+def gen_an_bm_c_n_plus_m(prior, seed):
+    for batch_size in _BATCH_SIZES:
+        training_strings = _gen_an_bm_c_n_plus_m_training_strings(batch_size, prior)
+
+        _write_strings(
+            training_strings,
+            language_name="an_bm_c_n_plus_m",
+            is_test=False,
+            is_preview=False,
+            batch_size=batch_size,
+            prior=prior,
+            seed=seed,
+            zip=True,
+        )
+
+        n_m_sqrt = math.ceil(math.sqrt(_NUM_TEST_STRINGS))
+        test_n_m_values = sorted(
+            itertools.product(range(1, n_m_sqrt + 1), range(1, n_m_sqrt + 1)), key=sum
+        )[:_NUM_TEST_STRINGS]
+
+        test_strings = []
+        for n, m in test_n_m_values:
+            test_strings.append("#" + "a" * n + "b" * m + "c" * (n + m) + "#")
+
+        _write_strings(
+            test_strings,
+            language_name="an_bm_c_n_plus_m",
+            is_test=True,
+            zip=True,
+        )
+        preview_strings = test_strings[:_PREVIEW_SIZE]
+        _write_strings(
+            preview_strings,
+            language_name="an_bm_c_n_plus_m",
+            is_preview=True,
+            is_test=False,
+            zip=False,
+        )
+
+        test_deterministic_steps_mask = _make_an_bm_c_n_plus_m_deterministic_steps_mask(
+            test_strings
+        )
+        test_deterministic_steps_mask_path = (
+            _get_language_path("an_bm_c_n_plus_m") / "test_deterministic_mask.txt"
+        )
+        np.savetxt(
+            test_deterministic_steps_mask_path,
+            test_deterministic_steps_mask,
+            fmt="%i",
+        )
+        _zip_and_delete(test_deterministic_steps_mask_path)
+
+
 def gen_an_bn_cn_etc(language_name, prior, seed):
     for batch_size in _BATCH_SIZES:
         n_values = sorted(np.random.geometric(p=prior, size=batch_size))
@@ -261,16 +346,18 @@ def gen_an_bn_cn_etc(language_name, prior, seed):
     _zip_and_delete(test_deterministic_steps_mask_path)
 
 
-if __name__ == "__main__":
-    utils.seed(_DEFAULT_SEED)
-    # --lang [language-name] --seed [seed] --prior [prior]
+def _seed(n):
+    random.seed(n)
+    np.random.seed(n)
 
+
+if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument(
         "--lang",
         dest="language_name",
         required=True,
-        help=f"Language name: an_bn, an_bn_cn, an_bn_cn_dn, dyck-1, dyck-2",
+        help=f"Language name: an_bn, an_bn_cn, an_bn_cn_dn, an_bm_c_n_plus_m, dyck-1, dyck-2",
     )
     arg_parser.add_argument(
         "--seed",
@@ -288,11 +375,18 @@ if __name__ == "__main__":
     )
     arguments = arg_parser.parse_args()
 
+    _seed(arguments.seed)
+
     if arguments.language_name == "an_bn":
         gen_an_bn(prior=arguments.prior, seed=arguments.seed)
     elif arguments.language_name in {"an_bn_cn", "an_bn_cn_dn"}:
         gen_an_bn_cn_etc(
             language_name=arguments.language_name,
+            prior=arguments.prior,
+            seed=arguments.seed,
+        )
+    elif arguments.language_name == "an_bm_c_n_plus_m":
+        gen_an_bm_c_n_plus_m(
             prior=arguments.prior,
             seed=arguments.seed,
         )
