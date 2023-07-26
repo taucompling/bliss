@@ -33,7 +33,7 @@ Example:
 
 All datasets are provided with boolean mask tensors for testing model outputs: 
 
-- **Deterministic step masks** - some languages have deterministic phases where a model's accuracy can be tested. For example, `aⁿbⁿ` sequences become determinstic after seeing the first `b`. A model that correctly recognizes `aⁿbⁿ` will not predict any probability to `a` from the first `b` onwards.    
+- **Deterministic step masks** - some languages have deterministic phases where a model's accuracy can be tested. For example, `aⁿbⁿ` sequences become deterministic after seeing the first `b`. A good model will not assign any probability to `a` after seeing the first `b`.    
 
 
 - **Valid symbol masks** - languages like Dyck don't have any deterministic parts (a new parenthesis can always be opened). But the set of valid symbols at each time step is limited. For example, for a Dyck-1 sequence, after seeing `#((`, a good model must not assign any probability to the end-of-sequence symbol. 
@@ -73,7 +73,7 @@ All datasets are provided with boolean mask tensors for testing model outputs:
 Each folder in `datasets` has the following structure:
 
 - `<language_name>`
-    - `train_<batch_size>_p_<prior>_seed_<seed>.txt.zip` – train set of batch `size` generated using `prior` and `seed`.
+    - `train_<batch_size>_p_<prior>_seed_<seed>.txt.zip` – train set of size `batch_size`sampled using probability `prior` and using the random `seed`.
   - `test.txt.zip` -- first 15,000 strings of the language sorted by length.
   - `preview.txt` -- first 10 strings of the language.
   - `test_deterministic_mask.txt.zip` – boolean mask for deterministic time steps, for relevant languages (all but Dyck
