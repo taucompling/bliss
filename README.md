@@ -8,12 +8,12 @@ For the full method and specs see the paper Benchmarking Neural Network Generali
 
 ## Languages
 
-* aⁿbⁿ ✅
-* aⁿbⁿcⁿ ✅
-* aⁿbⁿcⁿdⁿ ✅
-* aⁿbᵐcⁿ⁺ᵐ ✅
-* Dyck-1 🚧
-* Dyck-2 🚧
+* aⁿbⁿ
+* aⁿbⁿcⁿ
+* aⁿbⁿcⁿdⁿ
+* aⁿbᵐcⁿ⁺ᵐ
+* Dyck-1
+* Dyck-2
 
 ## String structure
 

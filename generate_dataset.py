@@ -321,7 +321,8 @@ def _gen_first_dyck_strings(dyck_n: int, num_strings: int):
 
     strings = set()
     progress_bar = tqdm(total=num_strings)
-    for sentence in generate.generate(cfg, depth=200):
+
+    for sentence in generate.generate(cfg, depth=6):
         s = "".join(filter(len, sentence))
         num_before = len(strings)
         strings.add(s)
@@ -333,7 +334,7 @@ def _gen_first_dyck_strings(dyck_n: int, num_strings: int):
         if num_after - num_before:
             progress_bar.update(1)
 
-    return tuple(sorted(set(strings), key=len))[:num_strings]
+    return tuple(sorted(set(strings), key=(len, lambda x: x)))[:num_strings]
 
 
 def gen_dyck(dyck_n: int, nesting_probab: float, seed: int):
@@ -369,26 +370,26 @@ def gen_dyck(dyck_n: int, nesting_probab: float, seed: int):
             zip=True,
         )
 
-    # test_strings = _gen_first_dyck_strings(
-    #     dyck_n=dyck_n,
-    #     num_strings=_NUM_TEST_STRINGS,
-    # )
-    #
-    # _write_strings(
-    #     test_strings,
-    #     language_name=language_name,
-    #     is_test=True,
-    #     zip=True,
-    # )
-    #
-    # preview_strings = test_strings[:_PREVIEW_SIZE]
-    # _write_strings(
-    #     preview_strings,
-    #     language_name=language_name,
-    #     is_preview=True,
-    #     is_test=False,
-    #     zip=False,
-    # )
+    test_strings = _gen_first_dyck_strings(
+        dyck_n=dyck_n,
+        num_strings=_NUM_TEST_STRINGS,
+    )
+
+    _write_strings(
+        test_strings,
+        language_name=language_name,
+        is_test=True,
+        zip=True,
+    )
+
+    preview_strings = test_strings[:_PREVIEW_SIZE]
+    _write_strings(
+        preview_strings,
+        language_name=language_name,
+        is_preview=True,
+        is_test=False,
+        zip=False,
+    )
 
 
 def gen_an_bn_cn_etc(language_name, prior, seed):
