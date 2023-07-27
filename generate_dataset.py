@@ -270,42 +270,42 @@ def gen_an_bm_c_n_plus_m(prior, seed):
             zip=True,
         )
 
-        n_m_sqrt = math.ceil(math.sqrt(_NUM_TEST_STRINGS))
-        test_n_m_values = sorted(
-            itertools.product(range(1, n_m_sqrt + 1), range(1, n_m_sqrt + 1)), key=sum
-        )[:_NUM_TEST_STRINGS]
+    n_m_sqrt = math.ceil(math.sqrt(_NUM_TEST_STRINGS))
+    test_n_m_values = sorted(
+        itertools.product(range(1, n_m_sqrt + 1), range(1, n_m_sqrt + 1)), key=sum
+    )[:_NUM_TEST_STRINGS]
 
-        test_strings = []
-        for n, m in test_n_m_values:
-            test_strings.append("#" + "a" * n + "b" * m + "c" * (n + m) + "#")
+    test_strings = []
+    for n, m in test_n_m_values:
+        test_strings.append("#" + "a" * n + "b" * m + "c" * (n + m) + "#")
 
-        _write_strings(
-            test_strings,
-            language_name="an_bm_c_n_plus_m",
-            is_test=True,
-            zip=True,
-        )
-        preview_strings = test_strings[:_PREVIEW_SIZE]
-        _write_strings(
-            preview_strings,
-            language_name="an_bm_c_n_plus_m",
-            is_preview=True,
-            is_test=False,
-            zip=False,
-        )
+    _write_strings(
+        test_strings,
+        language_name="an_bm_c_n_plus_m",
+        is_test=True,
+        zip=True,
+    )
+    preview_strings = test_strings[:_PREVIEW_SIZE]
+    _write_strings(
+        preview_strings,
+        language_name="an_bm_c_n_plus_m",
+        is_preview=True,
+        is_test=False,
+        zip=False,
+    )
 
-        test_deterministic_steps_mask = _make_an_bm_c_n_plus_m_deterministic_steps_mask(
-            test_strings
-        )
-        test_deterministic_steps_mask_path = (
-            _get_language_path("an_bm_c_n_plus_m") / "test_deterministic_mask.txt"
-        )
-        np.savetxt(
-            test_deterministic_steps_mask_path,
-            test_deterministic_steps_mask,
-            fmt="%i",
-        )
-        _zip_and_delete(test_deterministic_steps_mask_path)
+    test_deterministic_steps_mask = _make_an_bm_c_n_plus_m_deterministic_steps_mask(
+        test_strings
+    )
+    test_deterministic_steps_mask_path = (
+        _get_language_path("an_bm_c_n_plus_m") / "test_deterministic_mask.txt"
+    )
+    np.savetxt(
+        test_deterministic_steps_mask_path,
+        test_deterministic_steps_mask,
+        fmt="%i",
+    )
+    _zip_and_delete(test_deterministic_steps_mask_path)
 
 
 def _gen_first_dyck_strings(dyck_n: int, num_strings: int):
