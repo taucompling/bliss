@@ -114,4 +114,8 @@ Each dataset folder contains `preview.txt` for easy inspection of the data.
 ## Requirements 
 
 * Python ≥ 3.5
-* Numpy
+
+Quick setup:
+```
+pip install -r requirements.txt
+```
