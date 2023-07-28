@@ -1,4 +1,4 @@
-# BLISS – a Benchmark for Language Induction from Small Sets
+# 🧘 BLISS – a Benchmark for Language Induction from Small Sets
 
 BLISS is a dataset for testing the generalization capabilities of artificial models for language induction. The benchmark score represent how well a model generalizes in inverse relation how little data it was trained on.
 
@@ -77,8 +77,8 @@ Each folder in `datasets` has the following structure:
   - `test.txt.zip` -- first 15,000 strings of the language sorted by length.
   - `preview.txt` -- first 10 strings of the language.
   - `test_deterministic_mask.txt.zip` – boolean mask for deterministic time steps, for relevant languages (all but Dyck
-    languages). Shape: `(batch_size, sequence_length)`.
-  - `test_valid_symbols_mask.txt.zip` – boolean mask for relevant symbols, for Dyck languages. Shape: `(batch_size, sequence_length, vocabulary_size)` 
+    languages). Shape: `(batch_size, sequence_length)`. 
+  - `test_valid_symbols_mask.npz` – boolean mask for relevant symbols, for Dyck languages. Shape: `(batch_size, sequence_length, vocabulary_size)`. Load using `np.load(filename)["data"]`.
 
 
 

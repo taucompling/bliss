@@ -308,35 +308,76 @@ def gen_an_bm_c_n_plus_m(prior, seed):
     _zip_and_delete(test_deterministic_steps_mask_path)
 
 
-def _gen_first_dyck_strings(dyck_n: int, num_strings: int):
+def _gen_first_dyck_strings(dyck_n: int, num_strings: int) -> tuple[str, ...]:
     cfg_str = "S -> "
 
     for open_bracket, close_bracket in _DYCK_BRACKET_PAIRS[:dyck_n]:
-        cfg_str += f'"{open_bracket}" S "{close_bracket}" |'
+        cfg_str += f'"{open_bracket}" S "{close_bracket}" S |'
 
-    cfg_str += " S S | "
+    cfg_str += " "
 
-    print(cfg_str)
     cfg = nltk.CFG.fromstring(cfg_str)
 
     strings = set()
     progress_bar = tqdm(total=num_strings)
 
-    for sentence in generate.generate(cfg, depth=6):
-        s = "".join(filter(len, sentence))
-        num_before = len(strings)
-        strings.add(s)
-        num_after = len(strings)
-
-        if len(strings) == num_strings:
+    break_all = False
+    for depth in range(1, 10):
+        if break_all:
             break
 
-        if num_after - num_before:
-            progress_bar.update(1)
+        for sentence in generate.generate(cfg, depth=depth):
+            s = "".join(filter(len, sentence))
+            num_before = len(strings)
+            strings.add(s)
+            num_after = len(strings)
+
+            if len(strings) == num_strings:
+                break_all = True
+                break
+
+            if num_after - num_before:
+                progress_bar.update(1)
 
     strings = tuple(sorted(set(strings), key=lambda x: (len(x), x)))[:num_strings]
     strings = tuple(f"#{s}#" for s in strings)
     return strings
+
+
+def _get_dyck_valid_targets(sequences: tuple[str, ...], dyck_n: int) -> np.ndarray:
+    max_length = max(map(len, sequences))
+    num_sequences = len(sequences)
+    valid_targets = np.zeros((num_sequences, max_length, dyck_n * 2 + 1), dtype=bool)
+
+    vocabulary = {
+        "(": 1,
+        ")": 2,
+        "[": 3,
+        "]": 4,
+    }
+    opening_brackets = {"(", "["}
+    opening_bracket_idxs = [1, 3][:dyck_n]
+
+    stack = []
+
+    for b in range(num_sequences):
+        for i in range(len(sequences[b]) - 1):
+            current_symbol = sequences[b][i]
+            valid_targets[b, i, opening_bracket_idxs] = True  # Always true.
+            if current_symbol == "#":
+                valid_targets[b, i, 0] = True
+            elif current_symbol in opening_brackets:
+                stack = [current_symbol] + stack
+            else:
+                stack = stack[1:]
+
+            if len(stack) > 0:
+                symbol_idx = vocabulary[stack[0]]
+                valid_targets[b, i, symbol_idx + 1] = True
+            else:
+                valid_targets[b, i, 0] = True
+
+    return valid_targets
 
 
 def gen_dyck(dyck_n: int, nesting_probab: float, seed: int):
@@ -392,6 +433,12 @@ def gen_dyck(dyck_n: int, nesting_probab: float, seed: int):
         is_test=False,
         zip=False,
     )
+
+    test_valid_next_symbols = _get_dyck_valid_targets(test_strings, dyck_n)
+    test_valid_next_symbols_path = (
+        _get_language_path(language_name) / "test_valid_next_symbols"
+    )
+    np.savez_compressed(str(test_valid_next_symbols_path), data=test_valid_next_symbols)
 
 
 def gen_an_bn_cn_etc(language_name, prior, seed):
