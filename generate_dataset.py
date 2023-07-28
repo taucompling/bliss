@@ -334,7 +334,9 @@ def _gen_first_dyck_strings(dyck_n: int, num_strings: int):
         if num_after - num_before:
             progress_bar.update(1)
 
-    return tuple(sorted(set(strings), key=(len, lambda x: x)))[:num_strings]
+    strings = tuple(sorted(set(strings), key=lambda x: (len(x), x)))[:num_strings]
+    strings = tuple(f"#{s}#" for s in strings)
+    return strings
 
 
 def gen_dyck(dyck_n: int, nesting_probab: float, seed: int):
