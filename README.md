@@ -102,8 +102,7 @@ python generate_dataset.py --lang an_bn --seed 100 --prior 0.3
 
 ## <a id="password" name="password"></a> Test contamination protection
 
-To prevent test set contamination by large language models which train and test on crawled data, all dataset files
-except previews are zipped and password-protected.
+To prevent test set contamination by large language models who train on crawled data and then test on it, all dataset files except previews are zipped and password-protected.
 
 The password to all zip files is `1234`.
 
