@@ -67,7 +67,6 @@ All datasets are provided with boolean mask tensors for testing model outputs:
 </thead>
 </table>
 
-
 ## Folder structure
 
 Each folder in `datasets` has the following structure:
@@ -76,15 +75,16 @@ Each folder in `datasets` has the following structure:
     - `train_<batch_size>_p_<prior>_seed_<seed>.txt.zip` – train set of size `batch_size`sampled using probability `prior` and using the random `seed`.
   - `test.txt.zip` -- first 15,000 strings of the language sorted by length.
   - `preview.txt` -- first 10 strings of the language.
-  - `test_deterministic_mask.txt.zip` – boolean mask for deterministic time steps, for relevant languages (all but Dyck
+  - `test_deterministic_mask.npz` – boolean mask for deterministic time steps, for relevant languages (all but Dyck
     languages). Shape: `(batch_size, sequence_length)`. 
-  - `test_valid_symbols_mask.npz` – boolean mask for relevant symbols, for Dyck languages. Shape: `(batch_size, sequence_length, vocabulary_size)`. Load using `np.load(filename)["data"]`.
+  - `test_valid_next_symbols.npz` – boolean mask for relevant symbols, for Dyck languages. Shape: `(batch_size, sequence_length, vocabulary_size)`. 
 
+Load `npz` mask files using :
+```python
+np.load(filename)["data"]
+```
 
-
-### ️🚨 The password to all zip files is `1234`. [Why?](#password) 
-
-
+### ️🚨 The password to all zip files is `1234`. [Why?](#password)
 
 ## Generating new data
 

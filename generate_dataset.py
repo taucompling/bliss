@@ -185,14 +185,11 @@ def gen_an_bn(prior, seed):
         test_strings
     )
     test_deterministic_steps_mask_path = (
-        _get_language_path("an_bn") / "test_deterministic_mask.txt"
+        _get_language_path("an_bn") / "test_deterministic_mask"
     )
-    np.savetxt(
-        test_deterministic_steps_mask_path,
-        test_deterministic_steps_mask,
-        fmt="%i",
+    np.savez_compressed(
+        str(test_deterministic_steps_mask_path), data=test_deterministic_steps_mask
     )
-    _zip_and_delete(test_deterministic_steps_mask_path)
 
     preview_strings = test_strings[:_PREVIEW_SIZE]
     _write_strings(
@@ -298,14 +295,11 @@ def gen_an_bm_c_n_plus_m(prior, seed):
         test_strings
     )
     test_deterministic_steps_mask_path = (
-        _get_language_path("an_bm_c_n_plus_m") / "test_deterministic_mask.txt"
+        _get_language_path("an_bm_c_n_plus_m") / "test_deterministic_mask"
     )
-    np.savetxt(
-        test_deterministic_steps_mask_path,
-        test_deterministic_steps_mask,
-        fmt="%i",
+    np.savez_compressed(
+        str(test_deterministic_steps_mask_path), data=test_deterministic_steps_mask
     )
-    _zip_and_delete(test_deterministic_steps_mask_path)
 
 
 def _gen_first_dyck_strings(dyck_n: int, num_strings: int) -> tuple[str, ...]:
@@ -479,14 +473,11 @@ def gen_an_bn_cn_etc(language_name, prior, seed):
         test_strings
     )
     test_deterministic_steps_mask_path = (
-        _get_language_path(language_name) / "test_deterministic_mask.txt"
+        _get_language_path(language_name) / "test_deterministic_mask"
     )
-    np.savetxt(
-        test_deterministic_steps_mask_path,
-        test_deterministic_steps_mask,
-        fmt="%i",
+    np.savez_compressed(
+        str(test_deterministic_steps_mask_path), data=test_deterministic_steps_mask
     )
-    _zip_and_delete(test_deterministic_steps_mask_path)
 
 
 def _seed(n):
