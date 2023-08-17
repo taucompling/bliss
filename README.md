@@ -4,7 +4,7 @@ BLISS is a dataset for testing the generalization capabilities of artificial mod
 
 This repository contains the datasets and data generation scripts for training and testing a model on BLISS.
 
-For the full method and specs see the paper Benchmarking Neural Network Generalization for Language Induction.
+For the full method and specs see the paper [Benchmarking Neural Network Generalization for Language Induction](https://arxiv.org/abs/2308.08253).
 
 ## Languages
 
@@ -73,8 +73,8 @@ Each folder in `datasets` has the following structure:
 
 - `<language_name>`
     - `train_<batch_size>_p_<prior>_seed_<seed>.txt.zip` – train set of size `batch_size`sampled using probability `prior` and using the random `seed`.
-  - `test.txt.zip` -- first 15,000 strings of the language sorted by length.
-  - `preview.txt` -- first 10 strings of the language.
+  - `test.txt.zip` – first 15,000 strings of the language sorted by length. `aⁿbᵐcⁿ⁺ᵐ` is sorted by `n+m` values. Dyck are sorted by length+lexicographically.
+  - `preview.txt` – first 10 strings of the language.
   - `test_deterministic_mask.npz` – boolean mask for deterministic time steps, for relevant languages (all but Dyck
     languages). Shape: `(batch_size, sequence_length)`. 
   - `test_valid_next_symbols.npz` – boolean mask for relevant symbols, for Dyck languages. Shape: `(batch_size, sequence_length, vocabulary_size)`. 
