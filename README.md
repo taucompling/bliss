@@ -15,6 +15,20 @@ For the full method and specs see the paper [Benchmarking Neural Network General
 * Dyck-1
 * Dyck-2
 
+## Citing this work
+
+Please use the following citation if you use the datasets in your work: 
+
+```
+@inproceedings{Lan_Chemla_Katzir_2023,
+  title={Benchmarking Neural Network Generalization for Grammar Induction},
+  author={Lan, Nur and Chemla, Emmanuel and Katzir, Roni},
+  booktitle={Proceedings of the 2023 CLASP Conference on Learning with Small Data (LSD)},
+  pages={131--140},
+  year={2023}
+}
+```
+
 ## String structure
 
 Following [Gers & Schmidhuber (2001)](https://doi.org/10.1109/72.963769), all sequences start and end with the symbol `#`. This makes it possible to test for strict acceptance/rejection.
